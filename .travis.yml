@@ -1,0 +1,10 @@
+language: node_js
+node_js: node
+services: mongodb
+# deploy:
+#     provider: heroku
+#     api_key:
+#       secure: [YOUR-API-KEY]
+#     app: [YOUR-APP-NAME]
+#     on:
+#       repo: [YOUR-APP-REPO]

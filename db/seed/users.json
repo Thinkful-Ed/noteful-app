@@ -1,0 +1,20 @@
+[
+  {
+    "_id": "333333333333333333333300",
+    "fullname": "User Zero",
+    "username": "user0",
+    "password": "password0"
+  },
+  {
+    "_id": "333333333333333333333301",
+    "fullname": "User One",
+    "username": "user1",
+    "password": "password1"
+  },
+  {
+    "_id": "333333333333333333333302",
+    "fullname": "User Two",
+    "username": "user2",
+    "password": "password2"
+  }
+]

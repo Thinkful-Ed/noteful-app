@@ -1,0 +1,34 @@
+{
+	"name": "noteful-app",
+	"version": "0.0.1",
+	"license": "MIT",
+	"author": "Chris Klanac",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/cklanac/noteful-app.git"
+	},
+	"main": "server.js",
+	"scripts": {
+		"start": "node server.js",
+		"test": "cross-env NODE_ENV=test mocha --exit --file ./test/server.test.js",
+		"cover": "nyc --reporter=lcov --reporter=text-summary npm test"
+	},
+	"dependencies": {
+		"bcryptjs": "^2.4.3",
+		"dotenv": "^5.0.0",
+		"express": "^4.16.2",
+		"jsonwebtoken": "^8.1.1",
+		"mongoose": "^5.0.6",
+		"morgan": "^1.9.0",
+		"passport": "^0.4.0",
+		"passport-jwt": "^3.0.1",
+		"passport-local": "^1.0.0"
+	},
+	"devDependencies": {
+		"chai": "^4.1.2",
+		"chai-http": "^3.0.0",
+		"cross-env": "^5.1.3",
+		"mocha": "^5.0.0",
+		"nyc": "^11.4.1"
+	}
+}

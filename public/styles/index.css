@@ -1,0 +1,308 @@
+* {
+  box-sizing: border-box;
+}
+
+
+/* reset ul and li formatting */
+
+ul,
+li {
+  list-style-type: none;
+  list-style-position: inside;
+  margin: 0;
+  padding: 0.1em;
+}
+
+input,
+textarea,
+button {
+  margin: 0;
+}
+
+
+/* Make header sizes more sane */
+
+h1,
+h2,
+h3,
+h4 {
+  margin: 0;
+}
+
+h1 {
+  font-size: large;
+}
+
+h2 {
+  font-size: medium;
+}
+
+h3 {
+  font-size: small;
+}
+
+
+/***** STRUCTURE *****/
+
+body {
+  min-height: 100vh;
+}
+
+
+/* Define Main as flex ROW */
+
+body>main {
+  display: flex;
+  /* Total height minus Header and Footer */
+  height: calc(100vh - 6em);
+  min-height: 400px;
+  position: relative;
+}
+
+/* article gets 1 portion, effectively the rest of the row */
+
+main article {
+  flex: 1;
+}
+
+
+/* Define Nav(s) as flex COLUMN */
+
+nav {
+  display: flex;
+  flex-direction: column;
+}
+
+
+main nav ul:last-child {
+  flex: 1;
+}
+
+main nav ul {
+  overflow-y: auto;
+  overflow-x: hidden;
+  width:250px;
+}
+
+
+/* Define Article as flex COLUMN */
+
+main article {
+  /* flex column */
+  display: flex;
+  flex-direction: column;
+}
+
+
+/* article header gets default height and width */
+
+/* article form gets 1 portion, effectively the rest of the column */
+
+#note-edit-form {
+  /* 1 portions (the rest) */
+  flex: 1;
+}
+
+
+/* Define Edit Form as flex COLUMN */
+
+#note-edit-form {
+  display: flex;
+  flex-direction: column;
+}
+
+
+/* article header gets default height and width */
+
+
+/* article form gets 1 portion, effectively the rest of the column */
+
+#note-edit-form textarea {
+  /* 1 portions (the rest) */
+  flex: 1;
+}
+
+nav li {
+  border-top: 0.1px solid #08111b;
+}
+
+nav ul {
+  margin-bottom: 1em;
+}
+
+nav li {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+nav .name,
+nav .title {
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+nav .metadata {
+  width:100%;
+  display: flex;
+  justify-content: space-between;
+}
+
+section {
+  padding: 20px;
+}
+
+.signup-login {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+
+  margin: 0 auto;
+  padding: 20px;
+  resize: both;
+  overflow: auto;
+  position: absolute;
+
+  width: 100%;
+  height: 100%;
+  top: 0; 
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #FFFFFF; 
+  z-index: 2; 
+}
+
+
+.signup-login fieldset {
+  display: inline-block;
+}
+
+.signup-login input,
+.signup-login button {
+  margin: 0.3em;
+}
+
+.signup-login label {
+  width: 5em;
+  display: inline-block;
+}
+
+/***** STYLE *****/
+
+body>header,
+body>footer {
+  height: 3em;
+  padding: 1em;
+  border: 0.1px solid #929fad;
+}
+
+nav header,
+article header {
+  padding: 5px;
+}
+
+nav header a {
+  color: #FFFFFF;
+}
+
+nav .name,
+nav .title {
+  margin: 5px;
+}
+
+nav .removeBtn {
+  height: 18px;
+  width: 18px;
+  margin: 5px;
+}
+
+nav .metadata {
+  font-size: small;
+  color: #b0b4b7;
+  margin: 5px;
+}
+
+body>main {
+  border: 0.1px solid #929fad;
+}
+
+#note-edit-form input,
+#note-edit-form textarea,
+#note-edit-form select,
+#note-edit-form button {
+  margin: 0.5em;
+}
+
+#note-edit-form input,
+#note-edit-form textarea,
+#note-edit-form select {
+  padding: 0.5em;
+}
+
+#note-edit-form select,
+#note-edit-form button {
+  width: fit-content;
+}
+
+.removeBtn {
+  padding: 0;
+}
+
+.active {
+  background-color: #4e565d;
+}
+
+/***** THEME *****/
+
+body {
+  background-color: #353d44;
+  color: #d7d9db;
+}
+
+body>header,
+body>footer {
+  background-color: #292f35;
+}
+
+input,
+textarea,
+button {
+  background-color: #4e565d;
+  color: #FFFFFF;
+  border: 1px solid #929fad;
+  border-radius: 4px;
+}
+
+article input,
+article textarea,
+article button {
+  color: #FFFFFF;
+  border: 1px solid #929fad;
+  border-radius: 4px;
+}
+
+a {
+  color: #d7d9db;
+  text-decoration: none;
+}
+
+select {
+  background-color: #4e565d;
+  color: #FFFFFF;
+  display: inline-block;
+}
+
+.error-message {
+  color:red;
+  display:none;
+}
+.success-message {
+  color:limegreen;
+  display:none;
+}
+
+.signup-login {
+  background-color: #353d44;
+}
