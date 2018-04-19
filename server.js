@@ -2,6 +2,7 @@
 
 require('dotenv').config();
 const express = require('express');
+const cors = require('cors');
 const morgan = require('morgan');
 const mongoose = require('mongoose');
 const passport = require('passport');
@@ -27,6 +28,8 @@ const app = express();
 app.use(morgan(process.env.NODE_ENV === 'development' ? 'dev' : 'common', {
   skip: () => process.env.NODE_ENV === 'test'
 }));
+
+app.use(cors());
 
 // Utilize the Express static webserver, passing in the directory name
 app.use(express.static('public'));
