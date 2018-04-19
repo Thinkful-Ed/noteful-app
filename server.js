@@ -1,10 +1,12 @@
 'use strict';
 
 require('dotenv').config();
+const cors = require("cors");
 const express = require('express');
 const morgan = require('morgan');
 const mongoose = require('mongoose');
 const passport = require('passport');
+
 
 const { PORT, MONGODB_URI } = require('./config');
 const localStrategy = require('./passport/local');
@@ -22,6 +24,8 @@ passport.use(jwtStrategy);
 
 // Create an Express application
 const app = express();
+
+app.use(cors());
 
 // Log all requests. Skip logging during
 app.use(morgan(process.env.NODE_ENV === 'development' ? 'dev' : 'common', {
