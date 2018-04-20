@@ -21,4 +21,4 @@ It is also provided as a backend that curriculum contributors, instructors, and 
     1. Copy the authToken value
     1. Add token `Authorization` header as a Bearer Token
 
-If you need to zero out the database, you can run `node script/dropDatabase.js`
+If you need to zero out the database, you can run `node util/drop-database.js`
