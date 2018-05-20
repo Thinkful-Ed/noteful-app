@@ -1,20 +1,25 @@
 [
   {
     "_id": "333333333333333333333300",
-    "fullname": "User Zero",
-    "username": "user0",
-    "password": "password"
+    "fullname": "Pat User",
+    "username": "patuser",
+    "password": "$2a$10$QJCIX42iD5QMxLRgHHBJre2rH6c6nI24UysmSYtkmeFv6X8uS1kgi"
   },
   {
     "_id": "333333333333333333333301",
-    "fullname": "User One",
-    "username": "user1",
-    "password": "password"
+    "fullname": "Bob User",
+    "username": "bobuser",
+    "password": "$2a$10$QJCIX42iD5QMxLRgHHBJre2rH6c6nI24UysmSYtkmeFv6X8uS1kgi"
   },
   {
     "_id": "333333333333333333333302",
-    "fullname": "User Two",
-    "username": "user2",
-    "password": "password"
+    "fullname": "Jane User",
+    "username": "janeuser",
+    "password": "$2a$10$QJCIX42iD5QMxLRgHHBJre2rH6c6nI24UysmSYtkmeFv6X8uS1kgi"
+  },
+  {
+    "_id": "333333333333333333333303",
+    "username": "anonuser",
+    "password": "$2a$10$QJCIX42iD5QMxLRgHHBJre2rH6c6nI24UysmSYtkmeFv6X8uS1kgi"
   }
 ]

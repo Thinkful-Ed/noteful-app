@@ -1,31 +1,44 @@
-'use strict';
-const express = require('express');
-const passport = require('passport');
-const jwt = require('jsonwebtoken');
+"use strict";
 
-const { JWT_SECRET, JWT_EXPIRY } = require('../config');
+const express = require("express");
+const jwt = require("jsonwebtoken");
+
+const localAuth = require("../middleware/local-auth");
+const jwtAuth = require("../middleware/jwt-auth");
+
+const { JWT_SECRET, JWT_EXPIRY } = require("../config");
 
 const router = express.Router();
 
-const localAuth = passport.authenticate('local', { session: false, failWithError: true });
-
-router.post('/login', localAuth, (req, res) => {
-  const authToken = createAuthToken(req.user);
-  res.json({ authToken });
-});
-
-const jwtAuth = passport.authenticate('jwt', { session: false, failWithError: true });
-
-router.post('/refresh', jwtAuth, (req, res) => {
-  const authToken = createAuthToken(req.user);
-  res.json({ authToken });
-});
-
-function createAuthToken(user) {
-  return jwt.sign({ user }, JWT_SECRET, {
-    subject: user.username,
-    expiresIn: JWT_EXPIRY
+const createAuthToken = function (user) {
+  return new Promise(function (resolve, reject) {
+    jwt.sign({ user }, JWT_SECRET, { expiresIn: JWT_EXPIRY }, function (err, token) {
+      if (err) {
+        return reject(err);
+      }
+      resolve(token);
+    });
   });
-}
+};
+
+router.post("/login", localAuth, (req, res, next) => {
+  createAuthToken(req.user)
+    .then(authToken => {
+      res.json({ authToken });
+    })
+    .catch(err => {
+      next(err);
+    });
+});
+
+router.post("/refresh", jwtAuth, (req, res, next) => {
+  createAuthToken(req.user)
+    .then(authToken => {
+      res.json({ authToken });
+    })
+    .catch(err => {
+      next(err);
+    });
+});
 
 module.exports = router;

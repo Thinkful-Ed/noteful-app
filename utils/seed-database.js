@@ -1,38 +1,47 @@
-'use strict';
+"use strict";
 
-const mongoose = require('mongoose');
+const { MONGODB_URI } = require("../config");
+const Note = require("../models/note");
+const Folder = require("../models/folder");
+const Tag = require("../models/tag");
+const User = require("../models/user");
 
-const { MONGODB_URI } = require('../config');
-const Note = require('../models/note');
-const Folder = require('../models/folder');
-const Tag = require('../models/tag');
-const User = require('../models/user');
+const db = require("../db/mongoose");
 
-const seedNotes = require('../db/seed/notes');
-const seedFolders = require('../db/seed/folders');
-const seedTags = require('../db/seed/tags');
-const seedUsers = require('../db/seed/users');
+const seedNotes = require("../db/seed/notes");
+const seedFolders = require("../db/seed/folders");
+const seedTags = require("../db/seed/tags");
+const seedUsers = require("../db/seed/users");
 
-console.log(`Connecting to mongodb at ${MONGODB_URI}`);
-mongoose.connect(MONGODB_URI)
+
+db.connect(MONGODB_URI)
   .then(() => {
-    console.log('Dropping database');
-    return mongoose.connection.db.dropDatabase();
+    console.info("Dropping Database");
+    return db.dropDatabase();
   })
   .then(() => {
-    console.log('Seeding database');
+    console.info("Seeding Database");
     return Promise.all([
+
       Note.insertMany(seedNotes),
+
       Folder.insertMany(seedFolders),
       Folder.createIndexes(),
+
       Tag.insertMany(seedTags),
       Tag.createIndexes(),
-      // `.create()` calls mongoose pre save middleware
-      User.create(seedUsers),
-      User.createIndexes(),
+
+      User.insertMany(seedUsers),
+      User.createIndexes()
+
     ]);
   })
-  .then(() => mongoose.disconnect())
+  .then(() => {
+    console.info("Disconnecting");
+    return db.disconnect();
+  })
   .catch(err => {
+    db.disconnect();
+    console.error(`ERROR: ${err.message}`);
     console.error(err);
   });

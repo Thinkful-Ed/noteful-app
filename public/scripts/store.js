@@ -1,5 +1,5 @@
 // eslint-disable-next-line no-unused-vars
-'use strict';
+"use strict";
 
 const store = (function () {
 
@@ -10,9 +10,9 @@ const store = (function () {
 
     currentNote: {},
     currentQuery: {
-      searchTerm: '',
+      searchTerm: "",
     },
-    authToken: ''
+    authToken: ""
   };
 
 }());
