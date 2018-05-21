@@ -27,8 +27,8 @@ app.use(morgan(process.env.NODE_ENV === "development" ? "dev" : "common", {
 // Create a static webserver
 app.use(express.static("public"));
 
-// Enable CORS support for given client
-app.use(cors({ origin: CLIENT_ORIGIN }));
+// Enable CORS support
+app.use(cors());
 
 // Parse request body
 app.use(express.json());
