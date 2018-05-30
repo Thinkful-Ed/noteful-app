@@ -4,10 +4,9 @@ require("dotenv").config();
 
 const express = require("express");
 const morgan = require("morgan");
-const cors = require("cors");
 
 const db = require("./db/mongoose");
-const { PORT, CLIENT_ORIGIN } = require("./config");
+const { PORT } = require("./config");
 const jwtAuth = require("./middleware/jwt-auth");
 
 const notesRouter = require("./routes/notes");
@@ -26,9 +25,6 @@ app.use(morgan(process.env.NODE_ENV === "development" ? "dev" : "common", {
 
 // Create a static webserver
 app.use(express.static("public"));
-
-// Enable CORS support
-app.use(cors());
 
 // Parse request body
 app.use(express.json());
@@ -64,8 +60,8 @@ app.use((err, req, res, next) => {
 if (process.env.NODE_ENV !== "test") {
   db.connect();
 
-  app.listen(PORT, function () {
-    console.info(`Server listening on ${this.address().port}`);
+  app.listen(PORT, process.env.IP || 'localhost', function () {
+    console.info(`Server listening on ${this.address().address}:${this.address().port}`);
   }).on("error", err => {
     console.error(err);
   });
