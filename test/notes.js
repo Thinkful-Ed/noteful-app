@@ -4,20 +4,16 @@ const app = require("../server");
 const chai = require("chai");
 const chaiHttp = require("chai-http");
 
-const jwt = require("jsonwebtoken");
-
 const db = require("../db/mongoose");
-const { TEST_MONGODB_URI, JWT_SECRET } = require("../config");
+const { TEST_MONGODB_URI } = require("../config");
 
 const Note = require("../models/note");
 const Folder = require("../models/folder");
 const Tag = require("../models/tag");
-const User = require("../models/user");
 
 const seedNotes = require("../db/seed/notes");
 const seedFolders = require("../db/seed/folders");
 const seedTags = require("../db/seed/tags");
-const seedUsers = require("../db/seed/users");
 
 const expect = chai.expect;
 
@@ -25,8 +21,6 @@ chai.use(chaiHttp);
 
 describe("Noteful API - Notes", function () {
 
-  let user = {};
-  let token;
 
   before(function () {
     return db.connect(TEST_MONGODB_URI)
@@ -35,9 +29,6 @@ describe("Noteful API - Notes", function () {
 
   beforeEach(function () {
     return Promise.all([
-      User.insertMany(seedUsers),
-      User.createIndexes(),
-
       Note.insertMany(seedNotes),
 
       Folder.insertMany(seedFolders),
@@ -45,11 +36,7 @@ describe("Noteful API - Notes", function () {
 
       Tag.insertMany(seedTags),
       Tag.createIndexes()
-    ])
-      .then(([users]) => {
-        user = users[0];
-        token = jwt.sign({ user }, JWT_SECRET, { subject: user.username });
-      });
+    ]);
   });
 
   afterEach(function () {
@@ -63,10 +50,9 @@ describe("Noteful API - Notes", function () {
   describe("GET /api/notes", function () {
 
     it("should return the correct number of Notes", function () {
-      const dbPromise = Note.find({ userId: user.id });
+      const dbPromise = Note.find();
       const apiPromise = chai.request(app)
-        .get("/api/notes")
-        .set("Authorization", `Bearer ${token}`);
+        .get("/api/notes");
 
       return Promise.all([dbPromise, apiPromise])
         .then(([data, res]) => {
@@ -78,10 +64,9 @@ describe("Noteful API - Notes", function () {
     });
 
     it("should return a list with the correct right fields", function () {
-      const dbPromise = Note.find({ userId: user.id });
+      const dbPromise = Note.find();
       const apiPromise = chai.request(app)
-        .get("/api/notes")
-        .set("Authorization", `Bearer ${token}`);
+        .get("/api/notes");
 
       return Promise.all([dbPromise, apiPromise])
         .then(([data, res]) => {
@@ -92,7 +77,7 @@ describe("Noteful API - Notes", function () {
           res.body.forEach(function (item) {
             expect(item).to.be.a("object");
             // Note: folderId and content are optional
-            expect(item).to.include.all.keys("id", "title", "createdAt", "updatedAt", "tags", "userId");
+            expect(item).to.include.all.keys("id", "title", "createdAt", "updatedAt", "tags");
           });
         });
     });
@@ -101,13 +86,11 @@ describe("Noteful API - Notes", function () {
       const searchTerm = "gaga";
       const re = new RegExp(searchTerm, "i");
       const dbPromise = Note.find({
-        userId: user.id,
         title: { $regex: re }
         // $or: [{ 'title': { $regex: re } }, { 'content': { $regex: re } }]
       });
       const apiPromise = chai.request(app)
-        .get(`/api/notes?searchTerm=${searchTerm}`)
-        .set("Authorization", `Bearer ${token}`);
+        .get(`/api/notes?searchTerm=${searchTerm}`);
 
       return Promise.all([dbPromise, apiPromise])
         .then(([data, res]) => {
@@ -126,10 +109,9 @@ describe("Noteful API - Notes", function () {
       return Folder.findOne()
         .then((_data) => {
           data = _data;
-          const dbPromise = Note.find({ userId: user.id, folderId: data.id });
+          const dbPromise = Note.find({ folderId: data.id });
           const apiPromise = chai.request(app)
-            .get(`/api/notes?folderId=${data.id}`)
-            .set("Authorization", `Bearer ${token}`);
+            .get(`/api/notes?folderId=${data.id}`);
 
           return Promise.all([dbPromise, apiPromise]);
         })
@@ -145,13 +127,11 @@ describe("Noteful API - Notes", function () {
       const searchTerm = "NotValid";
       const re = new RegExp(searchTerm, "i");
       const dbPromise = Note.find({
-        userId: user.id,
         title: { $regex: re }
         // $or: [{ 'title': { $regex: re } }, { 'content': { $regex: re } }]
       });
       const apiPromise = chai.request(app)
-        .get(`/api/notes?searchTerm=${searchTerm}`)
-        .set("Authorization", `Bearer ${token}`);
+        .get(`/api/notes?searchTerm=${searchTerm}`);
 
       return Promise.all([dbPromise, apiPromise])
         .then(([data, res]) => {
@@ -168,19 +148,18 @@ describe("Noteful API - Notes", function () {
     it("should return correct notes", function () {
       let data;
 
-      return Note.findOne({ userId: user.id })
+      return Note.findOne()
         .then(_data => {
           data = _data;
 
           return chai.request(app)
-            .get(`/api/notes/${data.id}`)
-            .set("Authorization", `Bearer ${token}`);
+            .get(`/api/notes/${data.id}`);
         })
         .then((res) => {
           expect(res).to.have.status(200);
           expect(res).to.be.json;
           expect(res.body).to.be.an("object");
-          expect(res.body).to.have.all.keys("id", "title", "content", "createdAt", "updatedAt", "folderId", "tags", "userId");
+          expect(res.body).to.have.all.keys("id", "title", "content", "createdAt", "updatedAt", "folderId", "tags");
           expect(res.body.id).to.equal(data.id);
           expect(res.body.title).to.equal(data.title);
           expect(res.body.content).to.equal(data.content);
@@ -192,7 +171,6 @@ describe("Noteful API - Notes", function () {
 
       return chai.request(app)
         .get(`/api/notes/${badId}`)
-        .set("Authorization", `Bearer ${token}`)
         .then(res => {
           expect(res).to.have.status(400);
           expect(res.body.message).to.eq("The `id` is not valid");
@@ -203,7 +181,6 @@ describe("Noteful API - Notes", function () {
       // "DOESNOTEXIST" is 12 byte string which is a valid Mongo ObjectId()
       return chai.request(app)
         .get("/api/notes/DOESNOTEXIST")
-        .set("Authorization", `Bearer ${token}`)
         .then(res => {
           expect(res).to.have.status(404);
         });
@@ -222,7 +199,6 @@ describe("Noteful API - Notes", function () {
 
       return chai.request(app)
         .post("/api/notes")
-        .set("Authorization", `Bearer ${token}`)
         .send(newItem)
         .then(function (_res) {
           res = _res;
@@ -230,9 +206,9 @@ describe("Noteful API - Notes", function () {
           expect(res).to.have.header("location");
           expect(res).to.be.json;
           expect(res.body).to.be.a("object");
-          expect(res.body).to.have.all.keys("id", "title", "content", "createdAt", "updatedAt", "tags", "userId");
+          expect(res.body).to.have.all.keys("id", "title", "content", "createdAt", "updatedAt", "tags");
 
-          return Note.findOne({ _id: res.body.id, userId: user.id });
+          return Note.findOne({ _id: res.body.id});
         })
         .then(data => {
           expect(res.body.title).to.equal(data.title);
@@ -245,7 +221,6 @@ describe("Noteful API - Notes", function () {
 
       return chai.request(app)
         .post("/api/notes")
-        .set("Authorization", `Bearer ${token}`)
         .send(newItem)
         .then(res => {
           expect(res).to.have.status(400);
@@ -266,20 +241,19 @@ describe("Noteful API - Notes", function () {
       };
       let data;
 
-      return Note.findOne({ userId: user.id })
+      return Note.findOne()
         .then(_data => {
           data = _data;
 
           return chai.request(app)
             .put(`/api/notes/${data.id}`)
-            .send(updateItem)
-            .set("Authorization", `Bearer ${token}`);
+            .send(updateItem);
         })
         .then(function (res) {
           expect(res).to.have.status(200);
           expect(res).to.be.json;
           expect(res.body).to.be.a("object");
-          expect(res.body).to.have.all.keys("id", "title", "content", "createdAt", "updatedAt", "folderId", "tags", "userId");
+          expect(res.body).to.have.all.keys("id", "title", "content", "createdAt", "updatedAt", "folderId", "tags");
           expect(res.body.id).to.equal(data.id);
           expect(res.body.title).to.equal(updateItem.title);
           expect(res.body.content).to.equal(updateItem.content);
@@ -296,7 +270,6 @@ describe("Noteful API - Notes", function () {
 
       return chai.request(app)
         .put(`/api/notes/${badId}`)
-        .set("Authorization", `Bearer ${token}`)
         .send(updateItem)
         .then(res => {
           expect(res).to.have.status(400);
@@ -313,7 +286,6 @@ describe("Noteful API - Notes", function () {
 
       return chai.request(app)
         .put("/api/notes/DOESNOTEXIST")
-        .set("Authorization", `Bearer ${token}`)
         .send(updateItem)
         .then(res => {
           expect(res).to.have.status(404);
@@ -326,14 +298,13 @@ describe("Noteful API - Notes", function () {
       };
       let data;
 
-      return Note.findOne({ userId: user.id })
+      return Note.findOne()
         .then(_data => {
           data = _data;
 
           return chai.request(app)
             .put(`/api/notes/${data.id}`)
-            .send(updateItem)
-            .set("Authorization", `Bearer ${token}`);
+            .send(updateItem);
         })
         .then(res => {
           expect(res).to.have.status(400);
@@ -351,13 +322,12 @@ describe("Noteful API - Notes", function () {
       let data;
 
       return Note
-        .findOne({ userId: user.id })
+        .findOne()
         .then(_data => {
           data = _data;
 
           return chai.request(app)
-            .delete(`/api/notes/${data.id}`)
-            .set("Authorization", `Bearer ${token}`);
+            .delete(`/api/notes/${data.id}`);
         })
         .then(res => {
           expect(res).to.have.status(204);
@@ -374,7 +344,6 @@ describe("Noteful API - Notes", function () {
   it("should respond with 204 when document does not exist", function () {
     return chai.request(app)
       .delete("/api/notes/DOESNOTEXIST")
-      .set("Authorization", `Bearer ${token}`)
       .then((res) => {
         expect(res).to.have.status(204);
       });

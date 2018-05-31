@@ -8,13 +8,10 @@ const cors = require("cors");
 
 const db = require("./db/mongoose");
 const { PORT } = require("./config");
-const jwtAuth = require("./middleware/jwt-auth");
 
 const notesRouter = require("./routes/notes");
 const foldersRouter = require("./routes/folders");
 const tagsRouter = require("./routes/tags");
-const usersRouter = require("./routes/users");
-const authRouter = require("./routes/auth");
 
 // Create an Express application
 const app = express();
@@ -33,14 +30,10 @@ app.use(cors());
 // Parse request body
 app.use(express.json());
 
-// Public Routers
-app.use("/api", authRouter);
-app.use("/api/users", usersRouter);
-
 // Protected Routers
-app.use("/api/notes", jwtAuth, notesRouter);
-app.use("/api/folders", jwtAuth, foldersRouter);
-app.use("/api/tags", jwtAuth, tagsRouter);
+app.use("/api/notes", notesRouter);
+app.use("/api/folders", foldersRouter);
+app.use("/api/tags", tagsRouter);
 
 // Custom 404 Not Found route handler
 app.use((req, res, next) => {

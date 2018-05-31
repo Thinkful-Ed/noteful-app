@@ -152,43 +152,6 @@ nav .metadata {
 section {
   padding: 20px;
 }
-
-.signup-login {
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-
-  margin: 0 auto;
-  padding: 20px;
-  resize: both;
-  overflow: auto;
-  position: absolute;
-
-  width: 100%;
-  height: 100%;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: #FFFFFF;
-  z-index: 2;
-}
-
-
-.signup-login fieldset {
-  display: inline-block;
-}
-
-.signup-login input,
-.signup-login button {
-  margin: 0.3em;
-}
-
-.signup-login label {
-  width: 5em;
-  display: inline-block;
-}
-
 /***** STYLE *****/
 
 body>header,
@@ -301,8 +264,4 @@ select {
 .success-message {
   color:limegreen;
   display:none;
-}
-
-.signup-login {
-  background-color: #353d44;
 }
