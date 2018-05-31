@@ -7,7 +7,7 @@ const morgan = require("morgan");
 const cors = require("cors");
 
 const db = require("./db/mongoose");
-const { PORT, CLIENT_ORIGIN } = require("./config");
+const { PORT } = require("./config");
 const jwtAuth = require("./middleware/jwt-auth");
 
 const notesRouter = require("./routes/notes");
