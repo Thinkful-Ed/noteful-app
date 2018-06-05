@@ -9,13 +9,15 @@ const noteSchema = new mongoose.Schema({
   tags: [{ type: mongoose.Schema.Types.ObjectId, ref: "Tag" }]
 });
 
+// Add `createdAt` and `updatedAt` fields
 noteSchema.set("timestamps", true);
 
+// Customize output for `res.json(data)`, `console.log(data)` etc.
 noteSchema.set("toObject", {
+  virtuals: true,     // include built-in virtual `id`
+  versionKey: false,  // remove `__v` version key
   transform: function (doc, ret) {
-    ret.id = ret._id;
-    delete ret._id;
-    delete ret.__v;
+    delete ret._id; // delete `_id`
   }
 });
 
