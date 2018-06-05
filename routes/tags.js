@@ -32,7 +32,7 @@ router.get("/:id", (req, res, next) => {
     return next(err);
   }
 
-  Tag.findOne({ _id: id })
+  Tag.findById(id)
     .then(result => {
       if (result) {
         res.json(result);
@@ -119,7 +119,7 @@ router.delete("/:id", (req, res, next) => {
     return next(err);
   }
 
-  const tagRemovePromise = Tag.findOneAndRemove({ _id: id });
+  const tagRemovePromise = Tag.findByIdAndRemove(id);
 
   const noteUpdatePromise = Note.updateMany(
     { tags: id },

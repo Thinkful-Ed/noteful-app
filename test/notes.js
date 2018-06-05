@@ -208,7 +208,7 @@ describe("Noteful API - Notes", function () {
           expect(res.body).to.be.a("object");
           expect(res.body).to.have.all.keys("id", "title", "content", "createdAt", "updatedAt", "tags");
 
-          return Note.findOne({ _id: res.body.id});
+          return Note.findById(res.body.id);
         })
         .then(data => {
           expect(res.body.title).to.equal(data.title);

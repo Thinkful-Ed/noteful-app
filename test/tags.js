@@ -129,7 +129,7 @@ describe("Noteful API - Tags", function () {
           expect(res).to.be.json;
           expect(body).to.be.a("object");
           expect(body).to.have.all.keys("id", "name", "createdAt", "updatedAt");
-          return Tag.findOne({  _id: body.id });
+          return Tag.findById(body.id);
         })
         .then(data => {
           expect(body.id).to.equal(data.id);

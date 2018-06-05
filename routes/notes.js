@@ -51,7 +51,7 @@ function validateTagIds(tags) {
 router.get("/", (req, res, next) => {
   const { searchTerm, folderId, tagId } = req.query;
 
-  let filter = { };
+  let filter = {};
 
   if (searchTerm) {
     // filter.title = { $regex: searchTerm };
@@ -88,7 +88,7 @@ router.get("/:id", (req, res, next) => {
     return next(err);
   }
 
-  Note.findOne({ _id: id })
+  Note.findById(id)
     .populate("tags")
     .then(result => {
       if (result) {
@@ -198,7 +198,7 @@ router.delete("/:id", (req, res, next) => {
     return next(err);
   }
 
-  Note.findOneAndRemove({ _id: id})
+  Note.findByIdAndRemove(id)
     .then(() => {
       res.status(204).end();
     })
