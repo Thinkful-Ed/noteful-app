@@ -64,7 +64,7 @@ describe("Noteful API - Notes", function () {
     });
 
     it("should return a list with the correct right fields", function () {
-      const dbPromise = Note.find();
+      const dbPromise = Note.find().sort({ "updatedAt": "desc" });
       const apiPromise = chai.request(app)
         .get("/api/notes");
 
@@ -74,10 +74,15 @@ describe("Noteful API - Notes", function () {
           expect(res).to.be.json;
           expect(res.body).to.be.a("array");
           expect(res.body).to.have.length(data.length);
-          res.body.forEach(function (item) {
+          res.body.forEach(function (item, i) {
             expect(item).to.be.a("object");
             // Note: folderId and content are optional
             expect(item).to.include.all.keys("id", "title", "createdAt", "updatedAt", "tags");
+            expect(item.id).to.equal(data[i].id);
+            expect(item.title).to.equal(data[i].title);
+            expect(item.content).to.equal(data[i].content);
+            expect(new Date(item.createdAt)).to.eql(data[i].createdAt);
+            expect(new Date(item.updatedAt)).to.eql(data[i].updatedAt);
           });
         });
     });
@@ -98,8 +103,16 @@ describe("Noteful API - Notes", function () {
           expect(res).to.be.json;
           expect(res.body).to.be.a("array");
           expect(res.body).to.have.length(1);
-          expect(res.body[0]).to.be.an("object");
-          expect(res.body[0].id).to.equal(data[0].id);
+          res.body.forEach(function (item, i) {
+            expect(item).to.be.a("object");
+            // Note: folderId and content are optional
+            expect(item).to.include.all.keys("id", "title", "createdAt", "updatedAt", "tags");
+            expect(item.id).to.equal(data[i].id);
+            expect(item.title).to.equal(data[i].title);
+            expect(item.content).to.equal(data[i].content);
+            expect(new Date(item.createdAt)).to.eql(data[i].createdAt);
+            expect(new Date(item.updatedAt)).to.eql(data[i].updatedAt);
+          });
         });
     });
 
@@ -163,6 +176,8 @@ describe("Noteful API - Notes", function () {
           expect(res.body.id).to.equal(data.id);
           expect(res.body.title).to.equal(data.title);
           expect(res.body.content).to.equal(data.content);
+          expect(new Date(res.body.createdAt)).to.eql(data.createdAt);
+          expect(new Date(res.body.updatedAt)).to.eql(data.updatedAt);
         });
     });
 
@@ -207,12 +222,14 @@ describe("Noteful API - Notes", function () {
           expect(res).to.be.json;
           expect(res.body).to.be.a("object");
           expect(res.body).to.have.all.keys("id", "title", "content", "createdAt", "updatedAt", "tags");
-
           return Note.findById(res.body.id);
         })
         .then(data => {
+          expect(res.body.id).to.equal(data.id);
           expect(res.body.title).to.equal(data.title);
           expect(res.body.content).to.equal(data.content);
+          expect(new Date(res.body.createdAt)).to.eql(data.createdAt);
+          expect(new Date(res.body.updatedAt)).to.eql(data.updatedAt);
         });
     });
 
@@ -257,6 +274,9 @@ describe("Noteful API - Notes", function () {
           expect(res.body.id).to.equal(data.id);
           expect(res.body.title).to.equal(updateItem.title);
           expect(res.body.content).to.equal(updateItem.content);
+          expect(new Date(res.body.createdAt)).to.eql(data.createdAt);
+          // expect note to have been updated
+          expect(new Date(res.body.updatedAt)).to.greaterThan(data.updatedAt);
         });
     });
 

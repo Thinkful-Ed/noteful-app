@@ -8,14 +8,12 @@ const db = require("../db/mongoose");
 const { TEST_MONGODB_URI } = require("../config");
 
 const Folder = require("../models/folder");
-
 const seedFolders = require("../db/seed/folders");
 
 const expect = chai.expect;
 chai.use(chaiHttp);
 
 describe("Noteful API - Folders", function () {
-
   before(function () {
     return db.connect(TEST_MONGODB_URI)
       .then(() => db.dropDatabase());
@@ -53,17 +51,26 @@ describe("Noteful API - Folders", function () {
     });
 
     it("should return a list with the correct fields and values", function () {
-      const dbPromise = Folder.find().sort("name");
-      const apiPromise = chai.request(app)
-        .get("/api/folders");
-
-      return Promise.all([dbPromise, apiPromise])
+      return Promise.all([
+        Folder.find().sort("name"),
+        chai.request(app).get("/api/folders")
+      ])
         .then(([data, res]) => {
+          expect(res).to.have.status(200);
+          expect(res).to.be.json;
+          expect(res.body).to.be.a("array");
+          expect(res.body).to.have.length(data.length);
           res.body.forEach(function (item, i) {
             expect(item).to.be.a("object");
-            expect(item).to.have.all.keys("id", "name", "createdAt", "updatedAt");
+            expect(item).to.have.keys("id", "name", "createdAt", "updatedAt");
             expect(item.id).to.equal(data[i].id);
             expect(item.name).to.equal(data[i].name);
+
+            expect(new Date(item.createdAt)).to.eql(data[i].createdAt);
+            expect(new Date(item.updatedAt)).to.eql(data[i].updatedAt);
+
+            // Alternative Date comparison - fragile
+            // expect(item.createdAt).to.equal(data[i].createdAt.toISOString());
           });
         });
     });
@@ -87,6 +94,8 @@ describe("Noteful API - Folders", function () {
           expect(res.body).to.have.all.keys("id", "name", "createdAt", "updatedAt");
           expect(res.body.id).to.equal(data.id);
           expect(res.body.name).to.equal(data.name);
+          expect(new Date(res.body.createdAt)).to.eql(data.createdAt);
+          expect(new Date(res.body.updatedAt)).to.eql(data.updatedAt);
         });
     });
 
@@ -127,11 +136,13 @@ describe("Noteful API - Folders", function () {
           expect(res).to.be.json;
           expect(body).to.be.a("object");
           expect(body).to.have.all.keys("id", "name", "createdAt", "updatedAt");
-          return Folder.findOne({ _id: body.id });
+          return Folder.findById(body.id);
         })
         .then(data => {
           expect(body.id).to.equal(data.id);
           expect(body.name).to.equal(data.name);
+          expect(new Date(body.createdAt)).to.eql(data.createdAt);
+          expect(new Date(body.updatedAt)).to.eql(data.updatedAt);
         });
     });
 
@@ -186,6 +197,9 @@ describe("Noteful API - Folders", function () {
           expect(res.body).to.have.all.keys("id", "name", "createdAt", "updatedAt");
           expect(res.body.id).to.equal(data.id);
           expect(res.body.name).to.equal(updateItem.name);
+          expect(new Date(res.body.createdAt)).to.eql(data.createdAt);
+          // expect item to have been updated
+          expect(new Date(res.body.updatedAt)).to.greaterThan(data.updatedAt);
         });
     });
 
@@ -253,7 +267,7 @@ describe("Noteful API - Folders", function () {
 
   describe("DELETE /api/folders/:id", function () {
 
-    it("should delete an item by id", function () {
+    it("should delete an existing document and respond with 204", function () {
       let data;
       return Folder.findOne()
         .then(_data => {
@@ -264,10 +278,10 @@ describe("Noteful API - Folders", function () {
         .then(function (res) {
           expect(res).to.have.status(204);
           expect(res.body).to.be.empty;
-          return Folder.findById(data.id);
+          return Folder.count({ _id: data.id });
         })
-        .then((item) => {
-          expect(item).to.be.null;
+        .then(count => {
+          expect(count).to.equal(0);
         });
     });
 
