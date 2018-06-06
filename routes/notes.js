@@ -68,7 +68,7 @@ router.get("/", (req, res, next) => {
   }
 
   Note.find(filter)
-    .populate("tags")
+    .populate("tags").populate("folderId")
     .sort({ "updatedAt": "desc" })
     .then(results => {
       res.json(results);
@@ -91,7 +91,7 @@ router.get("/:id", (req, res, next) => {
   }
 
   Note.findOne({ _id: id, userId })
-    .populate("tags")
+    .populate("tags").populate("folderId")
     .then(result => {
       if (result) {
         res.json(result);
@@ -168,7 +168,7 @@ router.put("/:id", (req, res, next) => {
   ])
     .then(() => {
       return Note.findByIdAndUpdate(id, updateNote, { new: true })
-        .populate("tags");
+        .populate("tags").populate("folderId");
     })
     .then(result => {
       if (result) {
