@@ -56,6 +56,7 @@ router.get("/", (req, res, next) => {
 
   if (searchTerm) {
     // filter.title = { $regex: searchTerm };
+    filter.title = new RegExp(searchTerm, "i")  // <--- using RegExp constructor allows us to dynamically inject variable and have regex still work. 
     filter.$or = [{ "title": { $regex: searchTerm } }, { "content": { $regex: searchTerm } }];
   }
 
